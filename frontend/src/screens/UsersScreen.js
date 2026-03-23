@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
@@ -12,11 +12,7 @@ const UsersScreen = () => {
   const { userInfo } = useSelector((state) => state.userLogin);
   const API_URL = process.env.REACT_APP_API_URL;
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`${API_URL}/auth/users`, {
@@ -33,7 +29,11 @@ const UsersScreen = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL, userInfo.token]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleCreateUser = async (e) => {
     e.preventDefault();
